@@ -16,3 +16,5 @@ to do this:
 -edit onwards from "-ArgumentList" to be the docker container you want to launch
 -may also be a need to edit line 17 for the remote access of the docker container to be correct
 ------------------------------------------------------------------------------------------------------
+issue
+if docker doesnt lauch properly when first running, rerun the program
