@@ -4,8 +4,7 @@ Write-Output "Starting Docker container..."
 Start-Process "C:\Program Files\Docker\Docker\Docker Desktop.exe"
 Write-Host "Launching Docker Desktop..."
 
-Write-Output "Waiting for 5 seconds..."
-Start-Sleep -Seconds 5
+
 
 Write-Output "Docker started."
 
@@ -19,8 +18,8 @@ $dockerScript = {
 
 # Define the second script block for waiting and launching mstsc
 $mstscScript = {
-    Write-Output "Waiting for 15 seconds..."
-    Start-Sleep -Seconds 15
+    Write-Output "Waiting for 10 seconds..."
+    Start-Sleep -Seconds 10
 
     Write-Output "Launching mstsc..."
     Start-Process "mstsc" -ArgumentList "/v:localhost:3390", "/console"
