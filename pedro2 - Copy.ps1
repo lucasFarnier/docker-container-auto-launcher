@@ -58,6 +58,19 @@ $monitorDockerScript = {
 	  } 
 	  else {
     	  	  Write-Output "The container is not running."
+		  
+		  wsl -t docker-desktop
+
+		  # Forcefully kill Docker Desktop process
+		  Stop-Process -Name "Docker Desktop" -Force -ErrorAction SilentlyContinue
+
+		  # Forcefully kill Docker Engine related processes
+		  Stop-Process -Name "com.docker.backend" -Force -ErrorAction SilentlyContinue
+		  Stop-Process -Name "docker" -Force -ErrorAction SilentlyContinue
+		  Stop-Process -Name "Docker Desktop Service" -Force -ErrorAction SilentlyContinue
+
+		  Stop-Process -Name "com.docker.build" -Force -ErrorAction SilentlyContinue
+
 	  }
 
         # Sleep before checking again
