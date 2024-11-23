@@ -19,8 +19,9 @@ while($dockerStarted -eq $false)
 	}
 	catch {
 		Write-Output "Docker not started, checking again."
-	    	Write-Output "Waiting for 5 seconds to retry..."
+	    	Write-Output "Waiting for 10 seconds to retry..."
 	}
+	Write-Output "Waiting for 5 seconds to retry..."
    	Start-Sleep -Seconds 5
 }
 
@@ -49,11 +50,11 @@ $mstscScript = {
 $runspacePool = [runspacefactory]::CreateRunspacePool(1, [Environment]::ProcessorCount)
 $runspacePool.Open()
 
-# Create and configure the first runspace for Docker
+# Create and configure the second runspace for Docker
 $dockerRunspace = [powershell]::Create().AddScript($dockerScript)
 $dockerRunspace.RunspacePool = $runspacePool
 
-# Create and configure the second runspace for mstsc
+# Create and configure the third runspace for mstsc
 $mstscRunspace = [powershell]::Create().AddScript($mstscScript)
 $mstscRunspace.RunspacePool = $runspacePool
 
@@ -61,7 +62,8 @@ $mstscRunspace.RunspacePool = $runspacePool
 $dockerStatus = $dockerRunspace.BeginInvoke()
 $mstscStatus = $mstscRunspace.BeginInvoke()
 
-# Wait for both runspaces to finish
+
+# Wait for all runspaces to finish
 $dockerRunspace.EndInvoke($dockerStatus)
 $mstscRunspace.EndInvoke($mstscStatus)
 
