@@ -4,9 +4,26 @@ Write-Output "Starting Docker container..."
 Start-Process "C:\Program Files\Docker\Docker\Docker Desktop.exe"
 Write-Host "Launching Docker Desktop..."
 
+#try catch with "docker ps", if runs docker is running and it continues script
+$dockerStarted = $false
+while($dockerStarted -eq $false)
+{
+	try {
+		Write-Output "Trying to run Docker."
+		$dockerStarted = docker ps
+		if($dockerStarted -eq $true)
+		{
+			Write-Output "Docker is running."
+			break
+		}
+	}
+	catch {
+		Write-Output "Docker not started, checking again."
+	    	Write-Output "Waiting for 5 seconds to retry..."
+	}
+   	Start-Sleep -Seconds 5
+}
 
-
-Write-Output "Docker started."
 
 # Define the first script block for starting the Docker container
 $dockerScript = {
@@ -26,6 +43,7 @@ $mstscScript = {
 
     Write-Output "mstsc launched."
 }
+
 
 # Create a RunspacePool to manage multiple threads
 $runspacePool = [runspacefactory]::CreateRunspacePool(1, [Environment]::ProcessorCount)
@@ -50,5 +68,6 @@ $mstscRunspace.EndInvoke($mstscStatus)
 # Clean up runspaces
 $dockerRunspace.Dispose()
 $mstscRunspace.Dispose()
+
 $runspacePool.Close()
 $runspacePool.Dispose()
