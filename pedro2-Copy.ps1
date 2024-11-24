@@ -39,7 +39,7 @@ $mstscScript = {
     Write-Output "Waiting for 10 seconds..."
     Start-Sleep -Seconds 10
     Write-Output "Launching mstsc..."
-    Start-Process "mstsc" -ArgumentList "/v:localhost:3390", "/console"
+    Start-Process "mstsc" -ArgumentList "/v:localhost:3390", "/console" 
     Write-Output "mstsc launched."
 }
 
@@ -63,14 +63,20 @@ $monitorDockerScript = {
 
 		  # Forcefully kill Docker Desktop process
 		  Stop-Process -Name "Docker Desktop" -Force -ErrorAction SilentlyContinue
-
 		  # Forcefully kill Docker Engine related processes
 		  Stop-Process -Name "com.docker.backend" -Force -ErrorAction SilentlyContinue
 		  Stop-Process -Name "docker" -Force -ErrorAction SilentlyContinue
 		  Stop-Process -Name "Docker Desktop Service" -Force -ErrorAction SilentlyContinue
-
 		  Stop-Process -Name "com.docker.build" -Force -ErrorAction SilentlyContinue
 
+             	  # Close mstsc (Remote Desktop session)
+             	  Stop-Process -Name "mstsc" -Force -ErrorAction SilentlyContinue
+		  
+		  # Close powershell (the windows that this program creates)
+		  Start-Sleep -Seconds 5
+             	  Stop-Process -Name "powershell" -Force -ErrorAction SilentlyContinue
+		  
+		  $checker = $true
 	  }
 
         # Sleep before checking again
@@ -89,7 +95,7 @@ $runspace2.RunspacePool = $runspacePool
 $runspace3 = [powershell]::Create().AddScript($monitorDockerScript)
 $runspace3.RunspacePool = $runspacePool
 # Start the third script (Docker container monitoring) in a new PowerShell window
-Start-Process powershell -ArgumentList "-NoExit", "-Command", $monitorDockerScript
+Start-Process powershell -ArgumentList "-NoExit", "-Command", $monitorDockerScript -WindowStyle Minimized
 
 # Start the threads
 $handle1 = $runspace1.BeginInvoke()
@@ -97,6 +103,8 @@ $handle2 = $runspace2.BeginInvoke()
 $handle3 = $runspace3.BeginInvoke()
 
 Write-Host "Scripts are running in parallel threads. Press Ctrl+C to stop the original script."
+
+
 
 # Keep the main script running to allow threads to execute
 while ($true) {
