@@ -16,5 +16,9 @@ to do this:
 -edit onwards from "-ArgumentList" to be the docker container you want to launch
 -may also be a need to edit line 17 for the remote access of the docker container to be correct
 ------------------------------------------------------------------------------------------------------
+to end
+close the docker console page that appears
+it will proceed to close docker and all related applications as well as this programs applications
+------------------------------------------------------------------------------------------------------
 issue
 if docker doesnt lauch properly when first running, rerun the program
