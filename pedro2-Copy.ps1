@@ -30,7 +30,28 @@ $runspacePool.Open()
 
 # Define the first script block for starting the Docker container
 $dockerScript = {
-    Start-Process "docker" -ArgumentList "run", "-it", "--rm", "-p", "3390:3389", "-p", "2022:22", "--name=ntu-vm-comp20081", "-v", "docker_comp20081:/home/ntu-user/NetBeansProjects", "pedrombmachado/ntu_lubuntu:comp20081"
+    Start-Process "docker" -ArgumentList @(
+        "run",
+        "-d",
+        "--rm",
+        "-p", "3390:3389",
+        "-p", "2022:22",
+        "--name=ntu-vm-comp20081",
+        "-h", "ntu-vm-comp20081",
+        "-v", "docker_comp20081:/home/ntu-user/NetBeansProjects",
+        "pedrombmachado/ntu_lubuntu:comp20081"
+    )
+    Start-Process "docker" -ArgumentList @(
+        "run",
+        "-d",
+        "--rm",
+        "-p", "1883:1883",
+        "--name=mqtt-broker",
+        "-h", "mqtt-broker",
+        "pedrombmachado/mqtt:base",
+        "mosquitto",
+        "-c", "/mosquitto-no-auth.conf"
+    )
     Write-Output "Docker container started."
 }
 
@@ -69,8 +90,8 @@ $monitorDockerScript = {
 		  Stop-Process -Name "Docker Desktop Service" -Force -ErrorAction SilentlyContinue
 		  Stop-Process -Name "com.docker.build" -Force -ErrorAction SilentlyContinue
 
-             	  # Close mstsc (Remote Desktop session)
-             	  Stop-Process -Name "mstsc" -Force -ErrorAction SilentlyContinue
+          # Close mstsc (Remote Desktop session)
+          Stop-Process -Name "mstsc" -Force -ErrorAction SilentlyContinue
 		  
 		  # Close powershell (the windows that this program creates)
 		  Start-Sleep -Seconds 5
@@ -103,8 +124,6 @@ $handle2 = $runspace2.BeginInvoke()
 $handle3 = $runspace3.BeginInvoke()
 
 Write-Host "Scripts are running in parallel threads. Press Ctrl+C to stop the original script."
-
-
 
 # Keep the main script running to allow threads to execute
 while ($true) {
