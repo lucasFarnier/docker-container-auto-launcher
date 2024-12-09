@@ -72,9 +72,10 @@ $monitorDockerScript = {
     while ($checker -eq $false) {
 	  # Get the container's running state using docker inspect
 	  $runningState = docker container inspect -f '{{.State.Running}}' "ntu-vm-comp20081"
+	  $runningState2 = docker container inspect -f '{{.State.Running}}' "mqtt-broker"
 
 	  # Check if the container is running
-	  if ($runningState -eq $true) {
+	  if ($runningState -eq $true -and $runningState2 -eq $true) {
     		  Write-Output "The container is running."
 	  } 
 	  else {
